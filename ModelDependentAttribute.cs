@@ -2,9 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Reflection;
 
-namespace MVVM
+namespace MileHighWpf.MvvmModelMessaging
 {
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class ModelDependentAttribute : Attribute
     {
         public string[] PropertyNames { get; private set; } = Array.Empty<String>();
@@ -36,26 +36,26 @@ namespace MVVM
 
             foreach (var vmProp in props)
             {
-                    ModelDependentAttribute? attribute = vmProp.GetCustomAttribute(typeof(ModelDependentAttribute)) as ModelDependentAttribute;
-                    if (attribute != null)
+                ModelDependentAttribute? attribute = vmProp.GetCustomAttribute(typeof(ModelDependentAttribute)) as ModelDependentAttribute;
+                if (attribute != null)
+                {
+                    // Now record specific VM properties to update for a given Model property message.
+                    if (attribute.PropertyNames.Length != 0)
                     {
-                        // Now record specific VM properties to update for a given Model property message.
-                        if (attribute.PropertyNames.Length != 0)
+                        foreach (string modelPropName in attribute.PropertyNames)
                         {
-                            foreach (string modelPropName in attribute.PropertyNames)
+                            if (!propertyMap.ContainsKey(modelPropName))
                             {
-                                if (!propertyMap.ContainsKey(modelPropName))
-                                {
-                                    propertyMap.Add(modelPropName, new List<string>());
-                                }
-                                propertyMap[modelPropName].Add(vmProp.Name);
+                                propertyMap.Add(modelPropName, new List<string>());
                             }
-                        }
-                        else // Add to the non-specific assignment.
-                        {
-                            propertyMap[""].Add(vmProp.Name);
+                            propertyMap[modelPropName].Add(vmProp.Name);
                         }
                     }
+                    else // Add to the non-specific assignment.
+                    {
+                        propertyMap[""].Add(vmProp.Name);
+                    }
+                }
             }
             return propertyMap.ToDictionary(k => k.Key, v => v.Value.ToArray());
         }
