@@ -1,0 +1,56 @@
+﻿<Window x:Class="MileHighWpf.MvvmModelMessagingDemo.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:convs="clr-namespace:MileHighWpf.MvvmModelMessagingDemo.Converters"
+        xmlns:views="clr-namespace:MileHighWpf.MvvmModelMessagingDemo.Views"
+        xmlns:local="clr-namespace:MileHighWpf.MvvmModelMessagingDemo"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <convs:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
+        <convs:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+        <convs:InverseBooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter"/>
+    </Window.Resources>
+    <Grid x:Name="mainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="170"/>
+            <RowDefinition Height="190"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TabControl>
+            <TabItem Header="Tab 1">
+                <views:Tab1UserControl/>
+            </TabItem>
+            <TabItem Header="Tab 2">
+                <views:Tab2UserControl/>
+            </TabItem>
+        </TabControl>
+        <TextBox Grid.Row="1" Grid.Column="0"
+            BorderBrush="Black" BorderThickness="2"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+            TextWrapping="NoWrap"
+            IsReadOnly="True"
+            VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+            Text="{Binding LogText}">
+        </TextBox>
+        <StackPanel Grid.Row="1" Grid.Column="1"  Margin="3">
+            <ComboBox VerticalAlignment="Top" 
+                ItemsSource="{Binding NumLinesOptions}" SelectedItem="{Binding NumLines}"/>
+            <Button 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,50,0,0"
+                Height="23" Width="50" 
+                Content="Clear" 
+                ToolTip="Clear the log"
+                Command="{Binding ClearLogCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>

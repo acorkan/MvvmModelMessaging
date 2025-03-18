@@ -17,7 +17,7 @@ namespace MileHighWpf.MvvmModelMessaging
         protected virtual void SendModelUpdate(params string[] modelPropertyNames)
         {
             WeakReferenceMessenger.Default.Send<T>(new T() { Sender = this.GetType().Name, PropertyNames = modelPropertyNames });
-        }
+        } 
 
         /// <summary>
         /// Send update for all properties tagged ModelDependent and this property names.
