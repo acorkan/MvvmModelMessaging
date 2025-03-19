@@ -8,6 +8,8 @@ namespace MileHighWpf.MvvmModelMessagingDemo.Interfaces
 {
     public interface IMockImagingModel
     {
+        string Title { get; }
+
         void OpenCameras();
 
         void CloseCameras();

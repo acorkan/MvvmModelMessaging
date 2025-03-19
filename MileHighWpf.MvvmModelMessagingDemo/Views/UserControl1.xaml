@@ -8,11 +8,6 @@
              mc:Ignorable="d" 
              MinWidth="300"
              d:DesignHeight="150" d:DesignWidth="500">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <convs:InverseBooleanConverter x:Key="inverseBooleanConverter"/>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
         <Border BorderBrush="Black" BorderThickness="2" Margin="3">
         <StackPanel>

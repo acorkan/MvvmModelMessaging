@@ -6,6 +6,8 @@ namespace MileHighWpf.MvvmModelMessagingDemo.Models
 {
     public class Model3 : ModelBase<NewModelDependentMessage>, IMockImagingModel
     {
+        public string Title => "Mock Imaging Model 3";
+
         private bool _isOpen;
         public bool IsOpen
         {

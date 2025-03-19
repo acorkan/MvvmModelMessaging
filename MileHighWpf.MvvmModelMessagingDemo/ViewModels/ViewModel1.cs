@@ -1,19 +1,16 @@
-﻿using MileHighWpf.MvvmModelMessagingDemo.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MileHighWpf.MvvmModelMessagingDemo.Interfaces;
+using MileHighWpf.MvvmModelMessagingDemo.Models;
+using System.Windows;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
 {
     public class ViewModel1 : DemoViewModelBase
     {
-        public ViewModel1(Model1 model)
+        public ViewModel1()
         {
-            _imagingModel = model;
+            _imagingModel = (IMockImagingModel)(Application.Current as ITheApp).ServiceProvider.GetService(typeof(Model1));
             // Add a filter based on the model type.
-            AllowedMessageSenders.Add(model.GetType().ToString());
+            AllowedMessageSenders.Add(_imagingModel.GetType().ToString());
         }
     }
 }

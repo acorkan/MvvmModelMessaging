@@ -13,6 +13,7 @@ namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
     {
         protected IMockImagingModel _imagingModel;
 
+        public string Title { get => _imagingModel.Title; }
         [ModelDependent(nameof(IsOpen))] // When model sends message with "IsOpen" then this is opdated in the view
         [ModelDependentCallCanExecute(nameof(CloseCamerasCommand), nameof(OpenCamerasCommand),
            nameof(StartLiveImagingCommand), nameof(StopLiveImagingCommand))] // If this is ModelDependent then these RelayCommands are updated as well
@@ -68,5 +69,6 @@ namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
             return _imagingModel.IsOpen && _imagingModel.IsRunning;
         }
 
+        public DemoViewModelBase() : base() { }
     }
 }

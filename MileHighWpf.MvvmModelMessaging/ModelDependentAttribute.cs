@@ -4,22 +4,28 @@ using System.Reflection;
 
 namespace MileHighWpf.MvvmModelMessaging
 {
+    /// <summary>
+    /// Attribute to mark a property in a ViewModel as being bound (by messaging) to a set of properties in a Model.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class ModelDependentAttribute : Attribute
     {
-        public string[] PropertyNames { get; private set; } = Array.Empty<String>();
+        /// <summary>
+        /// The names of model properties that will trigger an update of a viewmodel property.
+        /// </summary>
+        public string[] ModelPropertyNames { get; private set; } = Array.Empty<String>();
 
         public ModelDependentAttribute() { }
 
         public ModelDependentAttribute(params string[] modelPropertyNames)
         {
-            PropertyNames = modelPropertyNames;
+            ModelPropertyNames = modelPropertyNames;
         }
 
         public ModelDependentAttribute(string propertyName) : this([propertyName]) { }
 
         /// <summary>
-        /// Use this to build a map that is a fast way of looking up which ViewModel properties should be updated for a given Model property update.
+        /// Use this to pre-build a map to look up which ViewModel properties should be updated for a given Model property update.
         /// Model property is the Key, and the Value is the list of VM properties to call OnPropertyChanged() on.
         /// </summary>
         /// <param name="viewModel"></param>
@@ -31,7 +37,6 @@ namespace MileHighWpf.MvvmModelMessaging
 
             // Set the default Key for no specified Model properties.
             propertyMap[""] = new List<string>();
-            //var props = viewModel.GetType().GetProperties();
             var props = viewModel.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             foreach (var vmProp in props)
@@ -40,9 +45,9 @@ namespace MileHighWpf.MvvmModelMessaging
                 if (attribute != null)
                 {
                     // Now record specific VM properties to update for a given Model property message.
-                    if (attribute.PropertyNames.Length != 0)
+                    if (attribute.ModelPropertyNames.Length != 0)
                     {
-                        foreach (string modelPropName in attribute.PropertyNames)
+                        foreach (string modelPropName in attribute.ModelPropertyNames)
                         {
                             if (!propertyMap.ContainsKey(modelPropName))
                             {

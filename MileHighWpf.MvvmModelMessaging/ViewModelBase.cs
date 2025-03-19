@@ -8,8 +8,16 @@ namespace MileHighWpf.MvvmModelMessaging
 {
     public abstract class ViewModelBase : ObservableRecipient
     {
-        public static bool TraceModelDependentMessages { get; set; }
-        //public static Dispatcher UIDispatcher;
+        /// <summary>
+        /// Set to true to see the map of messages.
+        /// If you plan to use this feature then this must be set before any ViewModels are created.
+        /// </summary>
+        public static bool TraceMessagesOn { get; set; }
+        /// <summary>
+        /// Set this to the main windows Dispatcher so that all messages coming from async tasks can be moved to the UI thread.
+        /// This must be set before any ViewModels are created.
+        /// </summary>
+        public static Dispatcher UIDispatcher;
 
         private readonly Dictionary<string, string[]> _propertyUpdateMap;
         private readonly Dictionary<string, IRelayCommand[]> _commandUpdateMap;
@@ -22,12 +30,11 @@ namespace MileHighWpf.MvvmModelMessaging
 
         protected ViewModelBase()
         {
-            //_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             _propertyUpdateMap = ModelDependentAttribute.BuildPropertyUpdateMap(this);
             _commandUpdateMap = ModelDependentCallCanExecuteAttribute.BuildCommandUpdateMap(this);
 
             RegisterMessage();
-            if (TraceModelDependentMessages)
+            if (TraceMessagesOn)
             {
                 System.Diagnostics.Trace.WriteLine($"VM {this} model message mapping...");
                 foreach (KeyValuePair<string, string[]> kvp in _propertyUpdateMap)
@@ -58,7 +65,7 @@ namespace MileHighWpf.MvvmModelMessaging
 
         /// <summary>
         /// Override this to customize the message type, otherwise GenericPropertyMessage will be used.
-        /// Be sure to use the same message type that the model will be using!
+        /// Be sure to use the same message type that the Model will be using!
         /// </summary>
         protected virtual void RegisterMessage()
         {
@@ -79,60 +86,67 @@ namespace MileHighWpf.MvvmModelMessaging
         protected virtual void OnModelUpdated(ModelDependentMessage message)
         {
             // If anything is in AllowedMessageSenders then only those things can be processed.
-            if ((AllowedMessageSenders.Count != 0) && !AllowedMessageSenders.Contains(message.Sender))
+            if ((AllowedMessageSenders.Count != 0) && !AllowedMessageSenders.Contains(message.ModelSenderName))
             {
-                System.Diagnostics.Trace.WriteLineIf(TraceModelDependentMessages, $"VM {this} model message mapping is ignorring sender '{message.Sender}' because it is restricted to senders(s): " +
+                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message mapping is ignorring sender '{message.ModelSenderName}' because it is restricted to senders(s): " +
                     string.Join(", ", AllowedMessageSenders));
                 return;
             }
             // Start with a list of the non-specific properties.
             List<string> vmPropsToUpdate = _propertyUpdateMap[""].ToList();
             // If flag is set then we update all properties.
-            if ((message.PropertyNames != null) &&
-                (message.PropertyNames.Length == 1) &&
-                (message.PropertyNames[0] == ModelDependentMessage.UpdateAllCode))
+            if ((message.ModelPropertyNames != null) &&
+                (message.ModelPropertyNames.Length == 1) &&
+                (message.ModelPropertyNames[0] == ModelDependentMessage.UpdateAllCode))
             {
                 foreach (KeyValuePair<string, string[]> kvp in _propertyUpdateMap)
                 {
                     vmPropsToUpdate.AddRange(kvp.Value);
                 }
-                System.Diagnostics.Trace.WriteLineIf(TraceModelDependentMessages, $"VM {this} model message sender '{message.Sender}' notified All property updates:");
+                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified All property updates:");
             }
-            else if ((message.PropertyNames != null) &&
-                (message.PropertyNames.Length != 0))
+            else if ((message.ModelPropertyNames != null) &&
+                (message.ModelPropertyNames.Length != 0))
             {
-                foreach (string modelPropertyName in message.PropertyNames)
+                foreach (string modelPropertyName in message.ModelPropertyNames)
                 {
                     if (_propertyUpdateMap.ContainsKey(modelPropertyName))
                     {
                         vmPropsToUpdate.AddRange(_propertyUpdateMap[modelPropertyName]);
                     }
                 }
-                System.Diagnostics.Trace.WriteLineIf(TraceModelDependentMessages, $"VM {this} model message sender '{message.Sender}' notified property updates: " +
-                    string.Join(", ", message.PropertyNames));
+                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified property updates: " +
+                    string.Join(", ", message.ModelPropertyNames));
             }
             else
             {
-                System.Diagnostics.Trace.WriteLineIf(TraceModelDependentMessages, $"VM {this} model message sender '{message.Sender}' notified non-specific property updates:");
+                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified non-specific property updates:");
             }
             // Call update once on each mapped VM property.
             if (vmPropsToUpdate.Count != 0)
             {
-                Dispatcher.CurrentDispatcher.Invoke(() => 
+                try
                 {
-                    foreach (string vmPropName in vmPropsToUpdate.Distinct())
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        System.Diagnostics.Trace.WriteLineIf(TraceModelDependentMessages, "   " + vmPropName);
-                        OnPropertyChanged(vmPropName);
-                        if (_commandUpdateMap.ContainsKey(vmPropName))
+                        foreach (string vmPropName in vmPropsToUpdate.Distinct())
                         {
-                            foreach (IRelayCommand command in _commandUpdateMap[vmPropName])
+                            System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, "   " + vmPropName);
+                            OnPropertyChanged(vmPropName);
+                            if (_commandUpdateMap.ContainsKey(vmPropName))
                             {
-                                command.NotifyCanExecuteChanged();
+                                foreach (IRelayCommand command in _commandUpdateMap[vmPropName])
+                                {
+                                    command.NotifyCanExecuteChanged();
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
+                catch(Exception ex)
+                {
+
+                }
             }
         }
     }

@@ -4,23 +4,23 @@ using System.Runtime.CompilerServices;
 namespace MileHighWpf.MvvmModelMessaging
 {
     /// <summary>
-    /// Base class where you want to use a custome message class that inheriits from GenericPropertyMessage.
+    /// Base class where you want to use a GenericPropertyMessage message class, or one that inherits from it.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ModelBase<T> where T : ModelDependentMessage, new()
     {
         /// <summary>
-        /// Send update for all properties tagged ModelDependent with these property names.
-        /// Override with a new message type if need be.
+        /// Send update for all properties tagged as ModelDependent and with these property names.
+        /// Override for a new message type if need be.
         /// </summary>
         /// <param name="modelPropertyName"></param>
         protected virtual void SendModelUpdate(params string[] modelPropertyNames)
         {
-            WeakReferenceMessenger.Default.Send<T>(new T() { Sender = this.GetType().Name, PropertyNames = modelPropertyNames });
-        } 
+            WeakReferenceMessenger.Default.Send<T>(new T() { ModelSenderName = this.GetType().FullName, ModelPropertyNames = modelPropertyNames });
+        }
 
         /// <summary>
-        /// Send update for all properties tagged ModelDependent and this property names.
+        /// Send update for all properties tagged ModelDependent and with these property names.
         /// </summary>
         /// <param name="modelPropertyName"></param>
         protected void SendModelUpdate(string modelPropertyName)
@@ -30,7 +30,7 @@ namespace MileHighWpf.MvvmModelMessaging
 
 
         /// <summary>
-        /// Send update for all properties tagged ModelDependent but no specific property name.
+        /// Send update for all properties tagged ModelDependent but no property name was specified.
         /// </summary>
         protected void SendModelUpdate()
         {
@@ -38,7 +38,7 @@ namespace MileHighWpf.MvvmModelMessaging
         }
 
         /// <summary>
-        /// Send update for all properties tagged ModelDependent, with or without specific property names.
+        /// Send update for all properties tagged ModelDependent regardless if they have any property names assigned or not.
         /// </summary>
         protected void SendModelUpdateAll()
         {
@@ -46,7 +46,9 @@ namespace MileHighWpf.MvvmModelMessaging
         }
 
         /// <summary>
-        /// Send update for all properties tagged ModelDependent and this property name, but only if the property chaned value.
+        /// Method to both update a property backing field and send an update for all properties 
+        /// tagged ModelDependent and this property name, but only if the property chaned value.
+        /// Use the return value to decide if you need to take further action.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="field"></param>
@@ -65,7 +67,7 @@ namespace MileHighWpf.MvvmModelMessaging
 
     /// <summary>
     /// Base class that uses GenericPropertyMessage.
-    /// You can let the VM filter by sender to prevent confusion between different senders.
+    /// You can let the receiving ViewModel filter by the message sender to prevent confusion between different models senders.
     /// </summary>
     public class ModelBase : ModelBase<ModelDependentMessage>
     {

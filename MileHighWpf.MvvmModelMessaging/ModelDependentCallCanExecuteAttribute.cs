@@ -5,16 +5,20 @@ using System.Reflection;
 
 namespace MileHighWpf.MvvmModelMessaging
 {
+    /// <summary>
+    /// Attribute to mark a property in a ViewModel so that when it is changed by a message from the Model, the specificed set of command Can...Execute methods are run to update the command state.
+    /// This atribute is only allowed if the ViewModel property is also attributed with [ModelDependent].
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class ModelDependentCallCanExecuteAttribute : Attribute
     {
-        public string[] PropertyNames { get; private set; } = Array.Empty<String>();
+        public string[] RelatedCommandCanExecuteNames { get; private set; } = Array.Empty<String>();
 
         public ModelDependentCallCanExecuteAttribute() { }
 
         public ModelDependentCallCanExecuteAttribute(params string[] modelPropertyNames)
         {
-            PropertyNames = modelPropertyNames;
+            RelatedCommandCanExecuteNames = modelPropertyNames;
         }
 
         public ModelDependentCallCanExecuteAttribute(string propertyName) : this([propertyName]) { }
@@ -26,12 +30,10 @@ namespace MileHighWpf.MvvmModelMessaging
         /// <returns></returns>
         public static Dictionary<string, IRelayCommand[]> BuildCommandUpdateMap(ObservableRecipient viewModel)
         {
-            //Dictionary<string, List<string>> propertyMap = new Dictionary<string, List<string>>();
             // For each relay command there are a list of properties that will cause it to have CanExecute updated.
             Dictionary<string, List<IRelayCommand>> commandMap = new Dictionary<string, List<IRelayCommand>>();
 
             // Set the default Key for no specified Model properties.
-            //var props = viewModel.GetType().GetProperties();
             var props = viewModel.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             Dictionary<string, IRelayCommand> relayCommands = GetRelayCommands(viewModel);
@@ -47,13 +49,13 @@ namespace MileHighWpf.MvvmModelMessaging
                         System.Diagnostics.Trace.WriteLine($"Warning: [ModelDependendCanExecute] requires [ModelDependent] on property {viewModel.ToString()}.{vmProp.Name}.");
                     }
                     // Now record specific VM properties to update for a given Model property message.
-                    if (canExecuteAttribute.PropertyNames.Length != 0)
+                    if (canExecuteAttribute.RelatedCommandCanExecuteNames.Length != 0)
                     {
                         if (!commandMap.ContainsKey(vmProp.Name))
                         {
                             commandMap.Add(vmProp.Name, new List<IRelayCommand>());
                         }
-                        foreach (string relayCommandName in canExecuteAttribute.PropertyNames)
+                        foreach (string relayCommandName in canExecuteAttribute.RelatedCommandCanExecuteNames)
                         {
                             if (relayCommands.ContainsKey(relayCommandName))
                             {
@@ -89,7 +91,6 @@ namespace MileHighWpf.MvvmModelMessaging
                     }
                 }
             }
-
             return commands;
         }
     }

@@ -1,62 +1,57 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using MileHighWpf.MvvmModelMessagingDemo.Views;
 using MileHighWpf.MvvmModelMessagingDemo.Models;
 using MileHighWpf.MvvmModelMessagingDemo.ViewModels;
 using MileHighWpf.MvvmModelMessagingDemo.Interfaces;
+using MileHighWpf.MvvmModelMessaging;
 
-namespace MileHighWpf.MvvmModelMessagingDemo;
-
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
-public partial class App : Application
+namespace MileHighWpf.MvvmModelMessagingDemo
 {
-    public static IServiceProvider ServiceProvider { get; private set; }
-
-    private Window _liveView;
-
-    private static void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : Application, ITheApp
     {
-        // Main V and VM
-        services.AddTransient<MainWindow>();
-        services.AddSingleton<MainWindowViewModel>();
+        private IServiceProvider _serviceProvider;
+        public IServiceProvider ServiceProvider { get => _serviceProvider; }
 
-        // Second V and VM
-        services.AddTransient<SecondWindow>();
-        services.AddSingleton<SecondWindowViewModel>();
+        private Window _liveView;
 
-        // Tab1 V, VM, and M
-        services.AddSingleton<Tab1ViewModel>();
-        services.AddSingleton<ITab1, Tab1Model>();
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<Model1>();
+            services.AddSingleton<Model4>();
+            services.AddSingleton<Model3>();
+            services.AddSingleton<Model2>();
 
-        // Tab1 V, VM, and M
-        services.AddSingleton<Tab2ViewModel>();
-        services.AddSingleton<ITab2, Tab2Model>();
-    }
+            // Tab1 V, VM, and M
+            services.AddSingleton<ViewModel1>();
+            services.AddSingleton<ViewModel2>();
+            services.AddSingleton<ViewModel3>();
+            services.AddSingleton<ViewModel4>();
+        }
 
-    private void Application_Startup(object sender, StartupEventArgs e)
-    {
-        var serviceCollection = new ServiceCollection();
-        ConfigureServices(serviceCollection);
-        ServiceProvider = serviceCollection.BuildServiceProvider();
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            // Request verbose output
+            ViewModelBase.TraceMessagesOn = true;
 
-        var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-        MainWindow.Closed += MainWindow_Closed;
-        mainWindow.Show();
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+            _serviceProvider = serviceCollection.BuildServiceProvider();
 
-        _liveView = ServiceProvider.GetRequiredService<SecondWindow>();
-        _liveView?.Show();
+            var mainWindow = new MainWindow();
+            mainWindow.Closed += MainWindow_Closed;
+            mainWindow.Show();
 
-        // Request verbose output
-        ViewModelBase.TraceModelDependentMessages = true;
-    }
+            _liveView = new SecondWindow();
+            _liveView.Show();
+        }
 
-    private void MainWindow_Closed(object? sender, EventArgs e)
-    {
-        _liveView?.Close();
+        private void MainWindow_Closed(object? sender, EventArgs e)
+        {
+            _liveView?.Close();
+        }
     }
 }
-

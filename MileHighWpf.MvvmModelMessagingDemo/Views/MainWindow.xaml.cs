@@ -20,11 +20,6 @@ namespace MileHighWpf.MvvmModelMessagingDemo.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(MainWindowViewModel viewModel) : this()
-        {
-            DataContext = viewModel;
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -33,7 +28,7 @@ namespace MileHighWpf.MvvmModelMessagingDemo.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // We meeed to record the UI dispatcher since we can not look it up.
-            //ViewModelBase.VMDispatcher = Dispatcher.CurrentDispatcher;
+            ViewModelBase.UIDispatcher = Dispatcher.CurrentDispatcher;
         }
     }
 }

@@ -1,14 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MileHighWpf.MvvmModelMessagingDemo.Interfaces;
 using MileHighWpf.MvvmModelMessagingDemo.Messages;
 using MileHighWpf.MvvmModelMessagingDemo.Models;
+using System.Windows;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
 {
-    class ViewModel2 : DemoViewModelBase
+    public class ViewModel2 : DemoViewModelBase
     {
-        public ViewModel2(Model2 model)
+        public ViewModel2()
         {
-            _imagingModel = model;
+            _imagingModel = (IMockImagingModel)(Application.Current as ITheApp).ServiceProvider.GetService(typeof(Model2));
         }
 
         /// <summary>

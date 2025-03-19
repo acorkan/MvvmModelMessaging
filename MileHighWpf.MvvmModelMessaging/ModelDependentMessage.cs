@@ -1,7 +1,7 @@
 ﻿namespace MileHighWpf.MvvmModelMessaging
 {
     /// <summary>
-    /// Basic message for notifying of model property updates.
+    /// Basic message for notifying of Model property updates.
     /// The sender is only identified by a string and multiple property notifications can be sent at once.
     /// </summary>
     public class ModelDependentMessage
@@ -13,11 +13,11 @@
         /// <summary>
         /// Names of properties in the model that have changed and now need to be updated in the ViewModel.
         /// </summary>
-        public string[] PropertyNames { get; set; }
+        public string[] ModelPropertyNames { get; set; }
         /// <summary>
         /// Name of the sending object, which can be used to filter the message.
         /// Typically use GetType().Name for this.
         /// </summary>
-        public string Sender { get; set; }
+        public string ModelSenderName { get; set; }
     }
 }

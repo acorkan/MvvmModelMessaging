@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:convs="clr-namespace:MileHighWpf.MvvmModelMessagingDemo.Converters"
         xmlns:views="clr-namespace:MileHighWpf.MvvmModelMessagingDemo.Views"
+        xmlns:vms="clr-namespace:MileHighWpf.MvvmModelMessagingDemo.ViewModels"
         xmlns:local="clr-namespace:MileHighWpf.MvvmModelMessagingDemo"
         mc:Ignorable="d"
         Title="Main Window" Height="450" Width="400"
@@ -13,9 +14,21 @@
         Loaded="Window_Loaded">
     <Grid>
         <StackPanel>
-            <views:UserControl1/>
-            <views:UserControl1/>
-            <views:UserControl1/>
+            <views:UserControl1>
+                <UserControl.DataContext>
+                    <vms:ViewModel1/>
+                </UserControl.DataContext>
+            </views:UserControl1>
+            <views:UserControl1>
+                <UserControl.DataContext>
+                    <vms:ViewModel2/>
+                </UserControl.DataContext>
+            </views:UserControl1>
+            <views:UserControl1>
+                <UserControl.DataContext>
+                    <vms:ViewModel3/>
+                </UserControl.DataContext>
+            </views:UserControl1>
         </StackPanel>
     </Grid>
 </Window>
