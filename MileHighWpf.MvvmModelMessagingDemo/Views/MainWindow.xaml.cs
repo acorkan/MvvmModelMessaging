@@ -1,4 +1,5 @@
-﻿using MileHighWpf.MvvmModelMessagingDemo.ViewModels;
+﻿using MileHighWpf.MvvmModelMessaging;
+using MileHighWpf.MvvmModelMessagingDemo.ViewModels;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,25 +12,28 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace MileHighWpf.MvvmModelMessagingDemo.Views;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+namespace MileHighWpf.MvvmModelMessagingDemo.Views
 {
-    public MainWindow(MainViewModel viewModel) : this()
-    {
-        DataContext = viewModel;
-    }
 
-    public MainWindow()
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-    }
+        public MainWindow(MainWindowViewModel viewModel) : this()
+        {
+            DataContext = viewModel;
+        }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e)
-    {
-        //ViewModelBase.UIDispatcher = Dispatcher.CurrentDispatcher;
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // We meeed to record the UI dispatcher since we can not look it up.
+            //ViewModelBase.VMDispatcher = Dispatcher.CurrentDispatcher;
+        }
     }
 }

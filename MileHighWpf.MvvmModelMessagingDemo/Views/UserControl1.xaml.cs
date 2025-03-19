@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace MileHighWpf.MvvmModelMessagingDemo.Views
 {
     /// <summary>
-    /// Interaction logic for Tab2UserControl.xaml
+    /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class Tab2UserControl : UserControl
+    public partial class UserControl1 : UserControl
     {
-        public Tab2UserControl()
+        public UserControl1()
         {
             InitializeComponent();
         }

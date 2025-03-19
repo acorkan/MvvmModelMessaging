@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.Views
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for SecondWindow.xaml
     /// </summary>
-    public partial class Tab1UserControl : UserControl
+    public partial class SecondWindow : Window
     {
-        public Tab1UserControl()
+        public SecondWindow()
         {
             InitializeComponent();
         }

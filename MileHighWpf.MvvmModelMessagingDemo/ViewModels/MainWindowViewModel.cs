@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
 {
-    public class MainViewModel
+    public class MainWindowViewModel
     {
     }
 }

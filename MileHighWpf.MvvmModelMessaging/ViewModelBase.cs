@@ -6,10 +6,10 @@ using System.Windows.Threading;
 
 namespace MileHighWpf.MvvmModelMessaging
 {
-    public abstract class MvvmViewModelBase : ObservableRecipient
+    public abstract class ViewModelBase : ObservableRecipient
     {
         public static bool TraceModelDependentMessages { get; set; }
-        public static Dispatcher UIDispatcher;
+        //public static Dispatcher UIDispatcher;
 
         private readonly Dictionary<string, string[]> _propertyUpdateMap;
         private readonly Dictionary<string, IRelayCommand[]> _commandUpdateMap;
@@ -20,7 +20,7 @@ namespace MileHighWpf.MvvmModelMessaging
         /// </summary>
         protected List<string> AllowedMessageSenders { get; } = new List<string>();
 
-        protected MvvmViewModelBase()
+        protected ViewModelBase()
         {
             //_dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             _propertyUpdateMap = ModelDependentAttribute.BuildPropertyUpdateMap(this);
@@ -62,7 +62,7 @@ namespace MileHighWpf.MvvmModelMessaging
         /// </summary>
         protected virtual void RegisterMessage()
         {
-            Messenger.Register<MvvmViewModelBase, ModelDependentMessage>(this, (recipient, message) =>
+            Messenger.Register<ViewModelBase, ModelDependentMessage>(this, (recipient, message) =>
             {
                 OnModelUpdated(message); // Update the Name property with message content
             });
