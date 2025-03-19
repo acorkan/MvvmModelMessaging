@@ -51,6 +51,10 @@ namespace MileHighWpf.MvvmModelMessagingDemo
 
         private void MainWindow_Closed(object? sender, EventArgs e)
         {
+            if(_liveView is ICanClose canClose)
+            {
+                canClose.IsTimeToClose = true;
+            }
             _liveView?.Close();
         }
     }
