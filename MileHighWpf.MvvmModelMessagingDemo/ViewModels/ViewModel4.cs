@@ -4,6 +4,9 @@ using System.Windows;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
 {
+    /// <summary>
+    /// Use default ModelDependentMessage and add the model type name to AllowedMessageSenders to filter other messages.
+    /// </summary>
     public class ViewModel4 : DemoViewModelBase
     {
         public ViewModel4()

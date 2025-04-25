@@ -27,8 +27,6 @@ namespace MileHighWpf.MvvmModelMessagingDemo.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // We meeed to record the UI dispatcher since we can not look it up.
-            ViewModelBase.UIDispatcher = Dispatcher.CurrentDispatcher;
         }
     }
 }

@@ -6,6 +6,9 @@ using System.Windows;
 
 namespace MileHighWpf.MvvmModelMessagingDemo.ViewModels
 {
+    /// <summary>
+    /// Use default ModelDependentMessage and override the RegisterMessage() method to just use AnotherModelDependentMessage messages.
+    /// </summary>
     public class ViewModel2 : DemoViewModelBase
     {
         public ViewModel2()
