@@ -6,18 +6,13 @@ using System.Windows.Threading;
 
 namespace MileHighWpf.MvvmModelMessaging
 {
-    public abstract class ViewModelBase : ObservableRecipient
+    public class ViewModelBase<T> : ObservableRecipient where T : ModelDependentMessage, new()
     {
         /// <summary>
         /// Set to true to see the map of messages.
         /// If you plan to use this feature then this must be set before any ViewModels are created.
         /// </summary>
         public static bool TraceMessagesOn { get; set; }
-        /// <summary>
-        /// Set this to the main windows Dispatcher so that all messages coming from async tasks can be moved to the UI thread.
-        /// This must be set before any ViewModels are created.
-        /// </summary>
-        public static Dispatcher UIDispatcher;
 
         private readonly Dictionary<string, string[]> _propertyUpdateMap;
         private readonly Dictionary<string, IRelayCommand[]> _commandUpdateMap;
@@ -69,7 +64,7 @@ namespace MileHighWpf.MvvmModelMessaging
         /// </summary>
         protected virtual void RegisterMessage()
         {
-            Messenger.Register<ViewModelBase, ModelDependentMessage>(this, (recipient, message) =>
+            Messenger.Register<ViewModelBase<T>, T>(this, (recipient, message) =>
             {
                 OnModelUpdated(message); // Update the Name property with message content
             });
@@ -150,4 +145,6 @@ namespace MileHighWpf.MvvmModelMessaging
             }
         }
     }
+
+    public class ViewModelBase : ViewModelBase<ModelDependentMessage> { }
 }

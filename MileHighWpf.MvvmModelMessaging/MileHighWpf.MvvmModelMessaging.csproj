@@ -7,10 +7,32 @@
     <Platforms>AnyCPU;x64</Platforms>
     <UseWPF>true</UseWPF>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <PackageProjectUrl></PackageProjectUrl>
+    <Description>A simple Model-to-ViewModel messaging mechanism to support MVVM implemented using property attributes.</Description>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/acorkan/MvvmModelMessaging</RepositoryUrl>
+    <PackageTags>CommunityToolkit;MVVM;.Net8</PackageTags>
+    <Title>WPF/MVVM Model-to-ViewModel Messaging</Title>
+    <Authors>L. A. Corkan</Authors>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="License.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
