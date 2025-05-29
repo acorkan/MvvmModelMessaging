@@ -19,5 +19,7 @@
         /// Typically use GetType().Name for this.
         /// </summary>
         public string ModelSenderName { get; set; }
+
+        public int ModelHashCode { get; set; }
     }
 }

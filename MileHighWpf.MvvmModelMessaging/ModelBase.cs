@@ -9,6 +9,19 @@ namespace MileHighWpf.MvvmModelMessaging
     /// <typeparam name="T"></typeparam>
     public class ModelBase<T> where T : ModelDependentMessage, new()
     {
+        private readonly int _hashCode;
+        private readonly DateTime _creationTime;
+
+        public ModelBase()
+        {
+            _creationTime = DateTime.Now;
+            int hash = 17;
+            hash = (hash * 7) + _creationTime.GetHashCode();
+            hash = (hash * 7) + base.GetHashCode();
+            _hashCode = hash;
+        }
+        public override int GetHashCode() => _hashCode;
+
         /// <summary>
         /// Send update for all properties tagged as ModelDependent and with these property names.
         /// Override for a new message type if need be.
@@ -16,7 +29,12 @@ namespace MileHighWpf.MvvmModelMessaging
         /// <param name="modelPropertyName"></param>
         protected virtual void SendModelUpdate(params string[] modelPropertyNames)
         {
-            WeakReferenceMessenger.Default.Send<T>(new T() { ModelSenderName = this.GetType().FullName, ModelPropertyNames = modelPropertyNames });
+            WeakReferenceMessenger.Default.Send<T>(new T() 
+            { 
+                ModelSenderName = this.GetType().FullName, 
+                ModelPropertyNames = modelPropertyNames,
+                ModelHashCode = this.GetHashCode()
+            });
         }
 
         /// <summary>
