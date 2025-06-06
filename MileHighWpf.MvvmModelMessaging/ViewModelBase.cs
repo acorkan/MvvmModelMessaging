@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -8,6 +9,11 @@ namespace MileHighWpf.MvvmModelMessaging
 {
     public class ViewModelBase<T> : ObservableRecipient where T : ModelDependentMessage, new()
     {
+        private static int _TrackingIndexCounter;
+        private readonly int _hashCode;
+        private readonly DateTime _creationTick = DateTime.Now;
+        public int TrackingIndex { get; } = Interlocked.Increment(ref _TrackingIndexCounter);
+
         /// <summary>
         /// Set to true to see the map of messages.
         /// If you plan to use this feature then this must be set before any ViewModels are created.
@@ -23,8 +29,20 @@ namespace MileHighWpf.MvvmModelMessaging
         /// </summary>
         protected List<string> AllowedMessageSenders { get; } = new List<string>();
 
+        public override int GetHashCode() => _hashCode;
+
+        public override string ToString()
+        {
+            return $"{GetType().Name}<{typeof(T).Name}>, {TrackingIndex}, {_hashCode}";
+        }
+
         protected ViewModelBase()
         {
+            int hash = 17;
+            hash = (hash * 7) + _creationTick.GetHashCode();
+            hash = (hash * 7) + TrackingIndex.GetHashCode();
+            _hashCode = hash;
+
             _propertyUpdateMap = ModelDependentAttribute.BuildPropertyUpdateMap(this);
             _commandUpdateMap = ModelDependentCallCanExecuteAttribute.BuildCommandUpdateMap(this);
 
@@ -83,7 +101,7 @@ namespace MileHighWpf.MvvmModelMessaging
             // If anything is in AllowedMessageSenders then only those things can be processed.
             if ((AllowedMessageSenders.Count != 0) && !AllowedMessageSenders.Contains(message.ModelSenderName))
             {
-                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message mapping is ignorring sender '{message.ModelSenderName}' because it is restricted to senders(s): " +
+                Trace.WriteLineIf(TraceMessagesOn, $"{this} model message mapping is ignorring sender '{message.ModelSenderName}' because it is restricted to senders(s): " +
                     string.Join(", ", AllowedMessageSenders));
                 return;
             }
@@ -98,7 +116,7 @@ namespace MileHighWpf.MvvmModelMessaging
                 {
                     vmPropsToUpdate.AddRange(kvp.Value);
                 }
-                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified All property updates:");
+                Trace.WriteLineIf(TraceMessagesOn, $"M {this} model message sender '{message.ModelSenderName}' notified All property updates:");
             }
             else if ((message.ModelPropertyNames != null) &&
                 (message.ModelPropertyNames.Length != 0))
@@ -110,12 +128,12 @@ namespace MileHighWpf.MvvmModelMessaging
                         vmPropsToUpdate.AddRange(_propertyUpdateMap[modelPropertyName]);
                     }
                 }
-                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified property updates: " +
+                Trace.WriteLineIf(TraceMessagesOn, $"{this} model message sender '{message.ModelSenderName}' notified property updates: " +
                     string.Join(", ", message.ModelPropertyNames));
             }
             else
             {
-                System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, $"VM {this} model message sender '{message.ModelSenderName}' notified non-specific property updates:");
+                Trace.WriteLineIf(TraceMessagesOn, $"{this} model message sender '{message.ModelSenderName}' notified non-specific property updates:");
             }
             // Call update once on each mapped VM property.
             if (vmPropsToUpdate.Count != 0)
@@ -126,7 +144,7 @@ namespace MileHighWpf.MvvmModelMessaging
                     {
                         foreach (string vmPropName in vmPropsToUpdate.Distinct())
                         {
-                            System.Diagnostics.Trace.WriteLineIf(TraceMessagesOn, "   " + vmPropName);
+                            Trace.WriteLineIf(TraceMessagesOn, "   " + vmPropName);
                             OnPropertyChanged(vmPropName);
                             if (_commandUpdateMap.ContainsKey(vmPropName))
                             {

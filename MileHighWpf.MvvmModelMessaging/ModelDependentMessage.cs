@@ -1,4 +1,6 @@
-﻿namespace MileHighWpf.MvvmModelMessaging
+﻿using System;
+
+namespace MileHighWpf.MvvmModelMessaging
 {
     /// <summary>
     /// Basic message for notifying of Model property updates.
@@ -21,5 +23,10 @@
         public string ModelSenderName { get; set; }
 
         public int ModelHashCode { get; set; }
+
+        public override string ToString()
+        {
+            return $"ModelDependentMessage {GetType().Name}, {ModelHashCode}, {ModelSenderName}";
+        }
     }
 }

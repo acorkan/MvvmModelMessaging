@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace MileHighWpf.MvvmModelMessaging
 {
@@ -9,18 +10,26 @@ namespace MileHighWpf.MvvmModelMessaging
     /// <typeparam name="T"></typeparam>
     public class ModelBase<T> where T : ModelDependentMessage, new()
     {
+        private static int _TrackingIndexCounter;
         private readonly int _hashCode;
-        private readonly DateTime _creationTime;
+        private readonly DateTime _creationTick = DateTime.Now;
+
+        [JsonIgnore]
+        public int TrackingIndex { get; } = Interlocked.Increment(ref _TrackingIndexCounter);
 
         public ModelBase()
         {
-            _creationTime = DateTime.Now;
             int hash = 17;
-            hash = (hash * 7) + _creationTime.GetHashCode();
-            hash = (hash * 7) + base.GetHashCode();
+            hash = (hash * 7) + _creationTick.GetHashCode();
+            hash = (hash * 7) + TrackingIndex.GetHashCode();
             _hashCode = hash;
         }
         public override int GetHashCode() => _hashCode;
+
+        public override string ToString()
+        {
+            return $"ModelBase<{typeof(T).Name}>, {TrackingIndex}, {_hashCode}";
+        }
 
         /// <summary>
         /// Send update for all properties tagged as ModelDependent and with these property names.
@@ -31,9 +40,9 @@ namespace MileHighWpf.MvvmModelMessaging
         {
             WeakReferenceMessenger.Default.Send<T>(new T() 
             { 
-                ModelSenderName = this.GetType().FullName, 
+                ModelSenderName = GetType().FullName, 
                 ModelPropertyNames = modelPropertyNames,
-                ModelHashCode = this.GetHashCode()
+                ModelHashCode = GetHashCode()
             });
         }
 
