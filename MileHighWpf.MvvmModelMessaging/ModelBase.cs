@@ -90,6 +90,11 @@ namespace MileHighWpf.MvvmModelMessaging
             SendModelUpdate(propertyName);
             return true;
         }
+
+        public Type GetMessageType()
+        {
+            return typeof(T);
+        }
     }
 
     /// <summary>
