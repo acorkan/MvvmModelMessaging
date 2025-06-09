@@ -20,7 +20,7 @@ namespace MileHighWpf.MvvmModelMessaging
         /// </summary>
         public static bool TraceMessagesOn { get; set; }
 
-        private readonly Dictionary<string, string[]> _propertyUpdateMap;
+        protected readonly Dictionary<string, string[]> _propertyUpdateMap;
         private readonly Dictionary<string, IRelayCommand[]> _commandUpdateMap;
         /// <summary>
         /// Use this to filter unwanted senders.
