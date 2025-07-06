@@ -24,7 +24,7 @@ namespace MileHighWpf.MvvmModelMessaging
 
         public int ModelHashCode { get; set; }
 
-        public override string ToString()
+        public override string ToDisplayString()
         {
             return $"ModelDependentMessage {GetType().Name}, {ModelHashCode}, {ModelSenderName}";
         }
