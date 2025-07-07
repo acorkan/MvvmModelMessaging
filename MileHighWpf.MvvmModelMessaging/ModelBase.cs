@@ -26,7 +26,7 @@ namespace MileHighWpf.MvvmModelMessaging
         }
         public override int GetHashCode() => _hashCode;
 
-        public override string ToDisplayString()
+        public override string ToString()
         {
             return $"ModelBase<{typeof(T).Name}>, {TrackingIndex}, {_hashCode}";
         }
